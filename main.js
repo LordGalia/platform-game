@@ -4,7 +4,7 @@ var ctx = c.getContext("2d");
 
 //set variable
 var yPos = 450;
-var xPos = 450;
+var xPos = 50;
 var jump = 0;
 var n;
 var nt = 0;
@@ -17,7 +17,7 @@ var previousTime = 0;
 var stopTime = false;
 var stopTimerLeftCorner = true;
 var freezeTime = 30;
-var level = 7;
+var level = 1;
 var numberOfPosibleShots = 50;
 var totalLevels = 7;
 var nextLevelCooldown = 0;
