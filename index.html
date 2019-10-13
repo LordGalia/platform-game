@@ -1,22 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" name="viewport">
+    <meta charset="UTF-8">
     <title>Platform</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
 </head>
 <body>
+    <div id="howToMain" class="howTo minimalTogglable"></div>
+    <div id="howToTitle" class="howTo minimalTogglable"><h1>HOW&nbspTO&nbspPLAY</h1></div>
+    <div id="howToText" class="howTo minimalTogglable">
+        Move: Arrow keys
+        <br>Reset level: space
+        <br>Next level: enter, x
+        <br>Previous level: z
+        <br>Minimal mode: m
+    </div>
 
-<canvas id="myCanvas" width="500" height="500" style="border:2px solid;"> Nettleseren din støtter ikke HTML5</canvas>
-<br>
-<input type="button" id="lvl1" value="Level - 1" name="1">
-<input type="button" id="lvl2" value="Level - 2">
-<input type="button" id="lvl3" value="Level - 3">
-<input type="button" id="lvl4" value="Level - 4">
-<input type="button" id="lvl5" value="Level - 5">
-<input type="button" id="lvl6" value="Level - 6">
-<input type="button" id="lvl7" value="Level - 7">
+    <canvas id="myCanvas" width="500" height="500" style="border:0px solid;"> Nettleseren din støtter ikke HTML5</canvas>
 
-<script src="main.js"></script>
+    <div id="outlineLevels" class="levelsDivs minimalTogglable"></div>
+    <div id="levels" class="levelsDivs minimalTogglable"></div>
+    <div id="hideOutsideLevelsTop" class="levelsDivs minimalTogglable"></div>
+    <div id="hideOutsideLevelsBottom" class="levelsDivs minimalTogglable"></div>
+    <div id="titleLevels" class="levelsDivs minimalTogglable">
+        <h1>LEVELS</h1>
+    </div>
 
+    <script src="main.js"></script>
 </body>
 </html>
