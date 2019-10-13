@@ -1,0 +1,114 @@
+body {
+	background-color: whitesmoke; /*setter bakgrunnsfarge*/
+}
+
+.howTo {
+	position: fixed;
+
+	left: calc(3% - 20px);
+	width: calc(42% - 210px);
+
+	text-align: center;
+
+	top: calc(50vh - 250px);
+	height: 498px;
+
+	background-color: rgb(236, 236, 236);
+	border: 1px solid black;
+}
+
+#howToTitle {
+	height: auto;
+	font-size: calc(2.5vw - 15px);
+}
+
+#howToText {
+	background-color: transparent;
+	border: none;
+
+	top: calc(50vh - 250px + 98px);
+
+	font-size: calc(3vw - 15px);
+}
+
+#myCanvas {
+	position: fixed;
+	left: calc(50% - 250px);
+	top: calc(50vh - 250px);
+}
+
+.levelsDivs {
+	position: fixed;
+
+	left: calc(55% + 230px);
+	width: calc(30% - 80px);
+
+	text-align: center;
+}
+
+#outlineLevels {
+	top: calc(50vh - 250px);
+	height: 499px;
+
+	background-color: rgb(236, 236, 236);
+	border: 1px solid black;
+	border-bottom: none;
+}
+
+#titleLevels {
+	top: calc(50vh - 250px);
+	height: auto;
+
+	font-size: calc(2.5vw - 15px);
+
+	background-color: rgb(236, 236, 236);
+	border: 1px solid black;
+}
+
+#hideOutsideLevelsTop {
+	top: 0px;
+	height: calc(50vh - 250px + 80px);
+
+	background-color: whitesmoke;
+}
+
+#hideOutsideLevelsBottom {
+	top: calc(50vh + 249px);
+	width: calc(30% - 79px);
+	height: 1000px;
+
+	border-top: 1px solid black;
+
+	background-color: whitesmoke;
+}
+
+#levels {
+	position: absolute;
+	/*top: 98px;*/
+	top: calc(50vh - 250px + 98px);
+	
+	font-size: calc(2.5vw - 15px);
+
+	margin-block-end: calc(50% - 510px);
+}
+
+.easy, .medium, .hard {
+	margin: 10px;
+
+	height: 60px; 
+	width: 60px;
+	border-radius: 5px;
+
+	color: white;
+	font-size: 26px;
+}
+
+#levels > .easy {
+	background-color: yellowgreen;
+}
+#levels > .medium {
+	background-color: rgb(216, 219, 39);
+}
+#levels > .hard {
+	background-color: rgb(250, 42, 42);
+}
