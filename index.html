@@ -6,14 +6,18 @@
     <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
 </head>
 <body>
-    <div id="howToMain" class="howTo minimalTogglable"></div>
-    <div id="howToTitle" class="howTo minimalTogglable"><h1>HOW&nbspTO&nbspPLAY</h1></div>
-    <div id="howToText" class="howTo minimalTogglable">
+    <div id="leftContainerMain" class="leftContainer minimalTogglable"></div>
+    <div id="howToTitle" class="leftContainer minimalTogglable"><h1>HOW&nbspTO&nbspPLAY</h1></div>
+    <div id="howToText" class="leftContainer minimalTogglable">
         Move: Arrow keys
         <br>Reset level: space
         <br>Next level: enter, x
         <br>Previous level: z
         <br>Minimal mode: m
+    </div>
+    <div id="settingsTitle" class="leftContainer minimalTogglable"><h1>Settings</h1></div>
+    <div id="settingsText" class="leftContainer minimalTogglable">
+        <label><input type="checkbox" id="autoSkipID" class="leftContainer minimalTogglable" onclick="autoSkip = !autoSkip" checked>Auto Skip Level</label>
     </div>
 
     <canvas id="myCanvas" width="500" height="500" style="border:0px solid;"> Nettleseren din støtter ikke HTML5</canvas>
