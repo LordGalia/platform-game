@@ -17,33 +17,28 @@ var previousTime = 0;
 var stopTime = false;
 var stopTimerLeftCorner = true;
 var freezeTime = 30;
-var level = 9;
+var level = 1;
 var numberOfPosibleShots = 50;
-var totalLevels = 10;
 var nextLevelCooldown = 0;
 var previousLevelCooldown = 0;
 var restartLevelCooldown = false;
 var toggleMinimal = true;
+var autoSkip = true;
 
-var myVar = setInterval(myTimer, 19*1);
+var totalLevels = 16;
+var nrEasyLevels = 7;
+var nrMediumLevels = 5;
+
+var myVar = setInterval(myTimer, 20*1);
 var myVar1s = setInterval(myTimer1s, 1000/Math.pow(10,numberOfTimeDigits));
-//array for bullet
-var bulletArray = new Array(numberOfPosibleShots);
-//sets all bullet arrays fromm 0-50 to 0
-clearAllBullets();
-//array for countFrequency
-var countFrequency = new Array(numberOfPosibleShots/10);
-while (nb <= numberOfPosibleShots/10) {
-	countFrequency[nb] = 0;
-	nb++;
-}
-nb = 0;
+
+//create shooter variables
+var frames = 0;
+var bulletArray = [];
+
 
 //var button
 var element = document.getElementById("levels");
-	var nrEasyLevels = 3;
-	var nrMediumLevels = 2;
-
 	for (let index = 1; index <= totalLevels; index++) {
 		var btn = document.createElement("button");
 		btn.appendChild(document.createTextNode(index));
@@ -64,10 +59,10 @@ var element = document.getElementById("levels");
 document.body.appendChild(element);	
 
 //setter alle highscore til 0
-var bestScore = new Array(10);
+var bestScore = new Array(totalLevels);
 
 var ns = 0;
-while (ns <= 7) {
+while (ns <= totalLevels) {
 	bestScore[ns] = -1;
 	ns++;
 }
@@ -78,7 +73,10 @@ function myTimer() {
     
 	//slett alt som er i bildet
 	ctx.clearRect(0, 0, 500, 500);
-    
+	
+	//bullet movement and drawing
+	moveAndDrawBullets();
+
 	//draw levels
 	drawLevels();
 	
@@ -97,12 +95,14 @@ function myTimer() {
 	
 	//tegn player
 	drawPlayer(xPos, yPos);
-
+	
 	//kill bullets
-	killBullets();
+	despawnBullets();
 
 	//svart boks rundt banen
 	drawBoxFrame(0,0,500,500,"black");
+	
+	frames++;
 }
 
 function myTimer1s() {
@@ -134,6 +134,11 @@ function drawGoal(xPosH, yPosH, length, height) {
 		//Blink screen green so you know you won
 		ctx.fillStyle = "lime";
 		drawBox(0, 0, 500, 500);
+
+		//skip to next level
+		if (autoSkip == true && level < totalLevels) {
+			level++
+		}
 	}
 
 }
@@ -242,51 +247,39 @@ function drawPlayer(xPos, yPos) {
 }
 
 //draw shooter
-function drawShooter(xPos, yPos, frequency, speed, shooterNr) {
-	countFrequency[shooterNr]++;
-	if (countFrequency[shooterNr] === frequency) {
-		countFrequency[shooterNr] = 0;
-		nb = (shooterNr - 1) * 10;
-		while (nb < (shooterNr * 10)) {
-			if (bulletArray[nb] === 0) {
-				bulletArray[nb] = xPos;
-				nb = numberOfPosibleShots;
-			}
-			nb++;
-		}
-	}
-
-	ctx.fillStyle = "Red";
-	drawBox(xPos, yPos, 5, 5);
-
-	nb = (shooterNr - 1) * 10;
-	while (nb < (shooterNr * (numberOfPosibleShots / 5))) {
-		if (bulletArray[nb] !== 0) {
-			bulletArray[nb] += speed;
-			drawDeathArea(bulletArray[nb], yPos, 5, 5);
-		}
-		nb++;
+function drawShooter(xPos, yPos, width, height, xSpeed, ySpeed, period) {
+	ctx.fillStyle = "red";
+	drawBox(xPos,yPos,width,height);
+	
+	if (frames%(period*50) == 1) {
+		bulletArray.push([xPos, yPos, width, height, xSpeed, ySpeed])
 	}
 }
 
 //kill bullets
-function killBullets() {
-	nb = 0;
-	while (nb < numberOfPosibleShots) {
-		if (bulletArray[nb] > 500 || bulletArray[nb] < 0) {
-			bulletArray[nb] = 0;
+function despawnBullets() {
+	for (i = 0; i < bulletArray.length; i++) {
+		if (bulletArray[i][0] < -100 || bulletArray[i][0] > 600 || bulletArray[i][1] < -100 || bulletArray[i][1] > 600) {
+			bulletArray.splice(i,1);
 		}
-		nb++;
+	}
+}
+
+//move and draw bullets
+function moveAndDrawBullets() {
+	for (i = 0; i < bulletArray.length; i++) {
+		//move bullets
+		bulletArray[i][0] += bulletArray[i][4];
+		bulletArray[i][1] += bulletArray[i][5];
+
+		//draw bullets
+		drawDeathArea(bulletArray[i][0],bulletArray[i][1],bulletArray[i][2],bulletArray[i][3])
 	}
 }
 
 //clear bullets from map
 function clearAllBullets() {
-	var ns = 0;
-	while (ns <= numberOfPosibleShots) {
-		bulletArray[ns] = 0;
-		ns++;
-	}
+	bulletArray = [];
 }
 
 //Jump calculations
@@ -443,8 +436,20 @@ function levelNr(nr) {
 function drawLevels() {
 	//deaw level 1
 	if (level === 1) {
+		box(20, 450, 90, 50);
+		box(0, 0, 0, 500);
+		box(0, 0, 500, 0);
+		box(500, 0, 0, 500);
+		box(0, 500, 500, 0);
+		box(20, 450, 279, 49);
+		drawDeathArea(300, 460, 89, 39);
+		box(390, 450, 89, 49);
+		box(140, 400, 79, 49);
+		drawGoal(420, 350, 29, 99);
+	}
+	else if (level === 2) {
 		//draw shooter
-		drawShooter(316,420,200,2,4);
+		drawShooter(216,420,5,5,2,0,2);
 
 		//frame
 		box(0, 0, 0, 500);
@@ -474,8 +479,29 @@ function drawLevels() {
 		//draw goal
 		drawGoal(460, 396, 20, 53);
 	}
-	//draw level 2
-	else if (level === 2) {
+	else if (level === 3) {
+		box(0, 0, 0, 500);
+		box(0, 0, 500, 0);
+		box(500, 0, 0, 500);
+		box(0, 500, 500, 0);
+		box(110, 350, 29, 149);
+		box(20, 450, 459, 49);
+		box(230, 240, 29, 125);
+		box(230, 400, 29, 69);
+		box(250, 330, 199, 19);
+		box(320, 330, 29, 35);
+		box(320, 400, 29, 49);
+		drawDeathArea(260, 350, 59, 9);
+		drawDeathArea(350, 350, 99, 9);
+		box(420, 400, 59, 49);
+		drawDeathArea(260, 320, 59, 9);
+		box(320, 315, 29, 19);
+		drawDeathArea(350, 320, 99, 9);
+		box(450, 315, 10, 50);
+		box(20, 240, 229, 29);
+		drawGoal(50, 170, 29, 69);
+	}
+	else if (level === 4) {
 		//draw black boxes
 		box(0, 0, 0, 500);
 		box(0, 0, 500, 0);
@@ -510,7 +536,21 @@ function drawLevels() {
 		drawDeathArea(310,80,30,100);
 		drawDeathArea(401,420,98,30);
 	}
-	else if (level === 3) {
+	else if (level === 5) {
+		box(20, 450, 90, 50);
+		box(0, 0, 0, 500);
+		box(0, 0, 500, 0);
+		box(500, 0, 0, 500);
+		box(0, 500, 500, 0);
+		box(110, 360, 99, 139);
+		drawDeathArea(20, 300, 419, 9);
+		box(300, 360, 109, 139);
+		drawDeathArea(210, 490, 89, 9);
+		drawDeathArea(410, 490, 89, 9);
+		box(17, 290, 425, 9);
+		drawGoal(20, 280, 419, 9);
+	}
+	else if (level === 6) {
 		//draw black boxes
 		box(0, 0, 0, 500);
 		box(500, 0, 0, 500);
@@ -541,7 +581,7 @@ function drawLevels() {
 		drawDeathArea(351,250,90,30);
 		drawDeathArea(470,380,30,69);
 	}
-	else if (level === 4) {
+	else if (level === 7) {
 		//draw black boxes
 		box(0, 0, 0, 500);
 		box(0, 0, 500, 0);
@@ -581,11 +621,11 @@ function drawLevels() {
 		box(285,110,20,100);
 		box(284,238,22,22);
 	}
-	else if (level === 5) {
+	else if (level === 8) {
 		//draw shooter
-		drawShooter(495, 80, 100, -5, 1);
-		drawShooter(250, 30, 30, 2, 2);
-		drawShooter(50, 225, 70, 3, 3);
+		drawShooter(495, 80, 5, 5, -5, 0, 2);
+		drawShooter(250, 30, 5, 5, 2,0, 0.6);
+		drawShooter(50, 225, 5, 5, 3,0, 1.4);
 
 		//draw black boxes
 		box(0, 0, 0, 500);
@@ -624,103 +664,7 @@ function drawLevels() {
 		drawDeathArea(271, 120, 158, 10);
 		drawDeathArea(200,50,50,5);
 	}
-	else if (level === 6) {
-		//draw black boxes
-		box(0, 0, 0, 500);
-		box(0, 0, 500, 0);
-		box(500, 0, 0, 500);
-		//bottom
-		box(40,450,50,10);
-
-		//left side
-		box(0,185,30,400);
-		box(200,95,30,400);
-
-		box(1,370,30,400);
-		box(199,277,30,400);
-
-		//right side
-		box(230,95,200,28);
-		box(300,160,200,30);
-		box(230,225,50,28);
-		box(380,225,50,28);
-		drawBox(230,225,200,28);
-		drawBoxFrame(230,225,200,28);
-
-		//draw death area
-		//bottom
-		drawDeathArea(32, 455, 166, 50);
-		drawDeathArea(231,455,268,50);
-
-		//right side
-		drawDeathArea(231,123,199,2);
-		drawDeathArea(231,253,199,2);
-
-		drawDeathArea(295,292,90,30);
-
-		//draw warning
-		ctx.fillStyle="yellow";
-		drawBox(330,230,5,10);
-		drawBox(330,242,5,5);
-
-		//draw goal
-		drawGoal(250,450,50,4);
-	}
-	else if (level === 7) {
-		//draw black boxes
-		//outline
-		box(0, 0, 0, 500);
-		box(0, 0, 500, 0);
-		box(500, 0, 0, 500);
-
-		//footing bottom row
-		box(20, 450, 90, 50);
-		box(420, 450, 90, 20);
-		box(200, 450, 90, 50);
-		//death bottom row
-		drawDeathArea(111,453,88,200);
-		drawDeathArea(330,320,20,150);
-		drawDeathArea(400,453,100,200);
-		
-		//death area under map
-		drawDeathArea(0,600,1000,100);
-		
-		//middle row
-		//black
-		box(150,340,5,30);
-		box(351,350,10,20);
-		box(351,345,5,10);
-		//death area
-		drawDeathArea(156,340,5,35);
-		drawDeathArea(391,340,5,35);
-		
-		//lower top row
-		box(50,285,30,5);
-		
-		drawDeathArea(44,250,5,40);
-		drawDeathArea(81,250,5,40);
-		
-		//top row
-		//left side
-		box(100,200,5,5);
-		box(50,145,30,5);
-		box(120,90,29,15);
-		//right side
-		box(415,90,50,10);
-		
-		drawDeathArea(50,150,30,5);
-		drawDeathArea(106,195,5,10);
-		drawDeathArea(20,108,130,2);
-		drawDeathArea(1, 0, 498, 2);
-		
-		drawDeathArea(200, 170,200,2);
-		drawDeathArea(200,175,2,35);
-		drawDeathArea(200, 213,40,2);
-		drawDeathArea(200,218,2,25);
-		
-		drawGoal(205,175,30,35);
-	}
-	else if (level === 8) {
+	else if (level === 9) {
 		box(0,0,10,500);
 		box(0,450,500,500);
 		box(490,0,10,450);
@@ -783,8 +727,7 @@ function drawLevels() {
 		//goal
 		drawGoal(480,190,10,40);
 	}
-	//draw level 9
-	if (level === 9) {
+	else if (level === 10) {
 		box(20, 450, 90, 50);
 		box(0, 0, 0, 500);
 		box(0, 0, 500, 0);
@@ -834,8 +777,120 @@ function drawLevels() {
 		drawGoal(475,61,10,48);
 		
 	}
-	//draw level 10
-	if (level === 10) {
+	else if (level === 11) {
+		box(20, 450, 90, 50);
+		box(0, 0, 0, 500);
+		box(0, 0, 500, 0);
+		box(500, 0, 0, 500);
+		box(0, 500, 500, 0);
+		box(20, 350, 89, 19);
+		drawDeathArea(140, 290, 29, 209);
+		drawDeathArea(210, 290, 149, 29);
+		drawDeathArea(180, 400, 29, 29);
+		box(180, 480, 29, 19);
+		drawDeathArea(270, 400, 29, 99);
+		drawDeathArea(220, 480, 29, 19);
+		drawDeathArea(310, 400, 29, 29);
+		box(310, 480, 29, 19);
+		drawDeathArea(360, 480, 109, 19);
+		box(470, 400, 29, 99);
+		drawDeathArea(430, 400, 29, 29);
+		box(360, 320, 29, 29);
+		box(250, 250, 69, 29);
+		box(20, 180, 89, 19);
+		drawDeathArea(160, 50, 29, 99);
+		box(250, 130, 69, 29);
+		drawDeathArea(380, 50, 29, 99);
+		drawGoal(420, 110, 69, 29);
+		box(280, 395, 49, 9);
+	}
+	else if (level === 12) {
+		box(20, 450, 90, 50);
+		box(0, 0, 0, 500);
+		box(0, 0, 500, 0);
+		box(500, 0, 0, 500);
+		box(0, 500, 500, 0);
+		box(110, 380, 39, 119);
+		box(180, 380, 29, 119);
+		drawDeathArea(150, 430, 29, 69);
+		drawDeathArea(110, 310, 39, 29);
+		drawDeathArea(180, 310, 29, 29);
+		drawDeathArea(110, 250, 99, 19);
+		box(198, 306, 71, 11);
+		drawGoal(140, 150, 39, 39);
+		drawDeathArea(220, 140, 19, 129);
+		drawDeathArea(250, 250, 99, 19);
+		box(260, 230, 79, 9);
+		box(120, 230, 79, 9);
+		drawDeathArea(370, 290, 19, 89);
+		drawDeathArea(210, 490, 249, 9);
+		box(460, 410, 39, 89);
+		box(390, 300, 9, 69);
+		drawDeathArea(460, 350, 39, 9);
+		drawDeathArea(460, 270, 39, 9);
+		box(470, 330, 19, 9);
+		box(470, 290, 19, 9);
+	}
+	else if (level === 13) {
+		//draw shoowters
+		drawShooter(210,-30,5,30,0,3,2);
+		drawShooter(308,-30,5,30,0,3,3);
+		drawShooter(327,530,5,30,0,-3,4);
+
+		drawShooter(450, -50, 5, 30,0,1.5,3.5);
+		drawShooter(425, 540, 5, 30,0,-2,4.5);
+
+		//draw pillars++
+		box(20, 450, 460, 50);
+		box(0, 0, 0, 500);
+		box(0, 0, 500, 0);
+		box(500, 0, 0, 500);
+		box(0, 500, 500, 0);
+		box(240, 110, 39, 339);
+		box(220, 370, 79, 19);
+		box(220, 290, 79, 19);
+		box(220, 210, 79, 19);
+		box(220, 130, 79, 19);
+		drawDeathArea(230, 150, 9, 59);
+		drawDeathArea(230, 230, 10, 59);
+		drawDeathArea(230, 310, 9, 59);
+		drawDeathArea(230, 390, 9, 59);
+		drawDeathArea(280, 150, 9, 59);
+		drawDeathArea(280, 230, 9, 59);
+		drawDeathArea(280, 310, 9, 59);
+		drawDeathArea(280, 390, 9, 59);
+		drawDeathArea(230, 70, 9, 59);
+		drawDeathArea(280, 70, 9, 59);
+		box(340, 130, 79, 19);
+		box(340, 210, 79, 19);
+		box(340, 290, 79, 19);
+		box(340, 50, 79, 19);
+		drawDeathArea(350, 310, 9, 59);
+		drawDeathArea(400, 310, 9, 59);
+		drawDeathArea(350, 230, 9, 59);
+		drawDeathArea(400, 230, 9, 59);
+		drawDeathArea(350, 150, 9, 59);
+		drawDeathArea(400, 150, 9, 59);
+		drawDeathArea(350, 70, 9, 59);
+		drawDeathArea(400, 70, 10, 59);
+		drawDeathArea(350, 0, 9, 49);
+		drawDeathArea(400, 0, 9, 49);
+		box(360, 0, 39, 329);
+		box(460, 370, 39, 19);
+		box(460, 290, 39, 19);
+		box(460, 210, 39, 19);
+		box(460, 130, 39, 19);
+		box(460, 50, 39, 19);
+		box(480, 0, 19, 500);
+		drawDeathArea(470, 0, 9, 49);
+		drawDeathArea(470, 70, 9, 59);
+		drawDeathArea(470, 150, 9, 59);
+		drawDeathArea(470, 230, 9, 59);
+		drawDeathArea(470, 310, 9, 59);
+		drawDeathArea(470, 390, 9, 59);
+		drawGoal(420, 0, 39, 39);
+	}
+	else if (level === 14) {
 		box(20, 450, 90, 50);
 		box(0, 0, 0, 500);
 		box(0, 0, 500, 0);
@@ -894,6 +949,103 @@ function drawLevels() {
 		box(10, 120, 10, 10);
 		drawDeathArea(230, 100, 20, 20);
 	}
+	else if (level === 15) {
+		//draw black boxes
+		box(0, 0, 0, 500);
+		box(0, 0, 500, 0);
+		box(500, 0, 0, 500);
+		//bottom
+		box(40,450,50,10);
+
+		//left side
+		box(0,185,30,400);
+		box(200,95,30,400);
+
+		box(1,370,30,400);
+		box(199,277,30,400);
+
+		//right side
+		box(230,95,200,28);
+		box(300,160,200,30);
+		box(230,225,50,28);
+		box(380,225,50,28);
+		drawBox(230,225,200,28);
+		drawBoxFrame(230,225,200,28);
+
+		//draw death area
+		//bottom
+		drawDeathArea(32, 455, 166, 50);
+		drawDeathArea(231,455,268,50);
+
+		//right side
+		drawDeathArea(231,123,199,2);
+		drawDeathArea(231,253,199,2);
+
+		drawDeathArea(295,292,90,30);
+
+		//draw warning
+		ctx.fillStyle="yellow";
+		drawBox(330,230,5,10);
+		drawBox(330,242,5,5);
+
+		//draw goal
+		drawGoal(250,450,50,4);
+	}
+	else if (level === 16) {
+		//draw black boxes
+		//outline
+		box(0, 0, 0, 500);
+		box(0, 0, 500, 0);
+		box(500, 0, 0, 500);
+
+		//footing bottom row
+		box(20, 450, 90, 50);
+		box(420, 450, 90, 20);
+		box(200, 450, 90, 50);
+		//death bottom row
+		drawDeathArea(111,453,88,200);
+		drawDeathArea(330,320,20,150);
+		drawDeathArea(400,453,100,200);
+		
+		//death area under map
+		drawDeathArea(0,600,1000,100);
+		
+		//middle row
+		//black
+		box(150,340,5,30);
+		box(351,350,10,20);
+		box(351,345,5,10);
+		//death area
+		drawDeathArea(156,340,5,35);
+		drawDeathArea(391,340,5,35);
+		
+		//lower top row
+		box(50,285,30,5);
+		
+		drawDeathArea(44,250,5,40);
+		drawDeathArea(81,250,5,40);
+		
+		//top row
+		//left side
+		box(100,200,5,5);
+		box(50,145,30,5);
+		box(120,90,29,15);
+		//right side
+		box(415,90,50,10);
+		
+		drawDeathArea(50,150,30,5);
+		drawDeathArea(106,195,5,10);
+		drawDeathArea(20,108,130,2);
+		drawDeathArea(1, 0, 498, 2);
+		
+		drawDeathArea(200, 170,200,2);
+		drawDeathArea(200,175,2,35);
+		drawDeathArea(200, 213,40,2);
+		drawDeathArea(200,218,2,25);
+		
+		drawGoal(205,175,30,35);
+	}
+	
 }
 
 
