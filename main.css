@@ -146,5 +146,5 @@ body {
 	width: 20px;
 	height: 20px;
 	left: calc(22vw - 205px);
-	top: calc(50vh - 140px);
+	top: calc(50vh + 5px);
 }
